@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+
+<html lang="vi">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>NodeShort — Xem phim ngắn, nhận thưởng mỗi ngày</title>
+<!-- Meta Pixel -->
+<script>
+  !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+  n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+  n.push=n; n.loaded=!0; n.version='2.0'; n.queue=[];
+  t=b.createElement(e); t.async=!0; t.src=v;
+  s=b.getElementsByTagName(e)[0]; s.parentNode.insertBefore(t,s)
+  }(window, document,'script','https://connect.facebook.net/en_US/fbevents.js');
+  fbq('init', '1525388635152926'); fbq('track', 'PageView');
+  </script>
+<noscript><img height="1" src="https://www.facebook.com/tr?id=1525388635152926&amp;ev=PageView&amp;noscript=1" style="display:none" width="1"/></noscript>
+<style>
+    :root{
+      --bg1:#fff8e1;--bg2:#ffefba;--text:#1a1a1a;--muted:#4f4f4f;
+      --gold1:#FFD700;--gold2:#FFCC33;
+      --border:rgba(234,190,63,.35);
+      --shadow:0 10px 30px rgba(0,0,0,.08);
+    }
+    html,body{margin:0;padding:0;background:linear-gradient(180deg,var(--bg1),var(--bg2));
+      color:var(--text);font-family:system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,'Noto Sans',sans-serif}
+    a{color:inherit;text-decoration:none}
+
+    /* Header */
+    header.brand{display:flex;flex-direction:column;align-items:center;gap:10px;padding:18px 14px 10px}
+    .brand-box{display:flex;align-items:center;gap:12px}
+    .brand-box img{width:88px;height:88px;border-radius:18px}
+    .brand-name{font-size:28px;font-weight:800;line-height:1;
+      background:linear-gradient(90deg,var(--gold1),var(--gold2));
+      -webkit-background-clip:text;background-clip:text;color:transparent;letter-spacing:.5px}
+    h1{font-size:22px;margin:6px 0 0;color:#7a5a00;text-align:center}
+    .sub{font-size:14px;color:#6a5a2a;text-align:center}
+
+    .container{width:min(1100px,96%);margin:0 auto}
+
+    /* Main poster (vertical, blended background, no card/padding) */
+    .poster{margin:12px auto 0}
+    .poster .poster-wrap{display:flex;justify-content:center}
+    .poster img{width:min(651px, 90vw);aspect-ratio:651/868;height:auto;object-fit:cover;border-radius:12px}
+
+    .synopsis{margin-top:12px;font-size:15px;line-height:1.7;color:#333;max-width:min(651px, 90vw);margin-left:auto;margin-right:auto}
+
+    /* Hint text above CTA */
+    .cta-hint{margin:14px auto 6px;max-width:650px;text-align:center;font-size:14px;color:#7a5a00;
+      padding:8px 10px;border-radius:10px;background:rgba(255,230,150,.35);border:1px solid rgba(234,190,63,.45)}
+
+    /* Unified bright-gold buttons */
+    .btn{display:flex;justify-content:center;align-items:center;gap:8px;border-radius:999px;
+      padding:14px 16px;font-weight:800;font-size:clamp(14px, 3.5vw, 17px); cursor:pointer;transition:.25s;
+      background:linear-gradient(90deg,var(--gold1),var(--gold2));color:#111;
+      box-shadow:0 10px 25px rgba(255,200,0,.45);letter-spacing:.2px;white-space:normal;text-align:center;line-height:1.25;max-width:100%;
+      border:2px solid rgba(255,215,0,.6)}
+    .btn:hover{transform:translateY(-1px);box-shadow:0 2px 34px rgba(255,200,0,.6)}
+
+    .cta-wrap{display:flex;justify-content:center;margin:8px auto 0}
+    .cta-wrap .btn{width:420px;max-width:100%}
+
+    /* Carousel 3-up showing 12 items */
+    .hero{position:relative;margin:18px auto 0;border-radius:16px;overflow:hidden;border:1px solid var(--border);
+      background:rgba(255,255,255,.28);box-shadow:var(--shadow)}
+    .carousel{overflow:hidden}
+    .track{display:flex;will-change:transform}
+    .slide{flex:0 0 calc(100%/3);padding:8px;box-sizing:border-box}
+    .media{width:100%;height:220px;object-fit:cover;border-radius:12px}
+    .hero-caption{padding:10px;text-align:center;color:#7a5a00;font-weight:700}
+
+    /* Tagline */
+    .tagline{margin:16px auto 0;text-align:center;color:#7a5a00;font-weight:800}
+    .tagline .s1{display:block;font-size:18px}
+    .tagline .s2{display:block;font-size:16px;color:#5a4400}
+
+    /* Footer */
+    footer{margin:16px 0 26px;text-align:center;color:#4f4f4f;font-size:12px;padding-top:10px}
+    footer a{color:#663e00;text-decoration:underline}
+
+    /* Mobile tweaks */
+    @media (max-width: 768px){
+      .brand-name{font-size:24px}
+      h1{font-size:18px}
+      .cta-wrap .btn{width:90%; margin:0 auto}
+      .media{height:180px}
+    }
+  </style>
+<style>
+/* === Dual Carousel visibility & mobile no-crop (2025-10-19) === */
+.carousel.desktop{ display:block; }
+.carousel.mobile{ display:none; }
+
+@media (max-width:768px){
+  .carousel.desktop{ display:none !important; }
+  .carousel.mobile{ display:block !important; }
+  .carousel.mobile .media{
+    width:100%; height:auto; object-fit:contain; object-position:center center; border-radius:12px;
+  }
+  .carousel.mobile, .carousel.mobile .track, .carousel.mobile .slide{ height:auto; }
+}
+</style><style>
+/* === Mobile 3-up carousel (shift by 1 item) — 2025-10-19 === */
+@media (max-width:768px){
+  .carousel.mobile{ display:block !important; overflow:hidden; }
+  .carousel.mobile .track{ display:flex; gap:0; will-change:transform; }
+  .carousel.mobile .slide{ flex:0 0 calc(100%/3); display:flex; align-items:center; justify-content:center; }
+  .carousel.mobile .media{ width:100%; height:auto; object-fit:contain; object-position:center center; border-radius:12px; }
+}
+</style></head>
+<body>
+<!-- Header -->
+<header class="brand container">
+<div class="brand-box">
+<img alt="NodeShort Logo" src="400.png"/>
+<span class="brand-name">NodeShort</span>
+</div>
+<h1>🎬 NodeShort — Xem phim ngắn, nhận thưởng mỗi ngày</h1>
+<div class="sub">Giải trí thông minh · Kiếm lợi nhuận bền vững từ hệ sinh thái phim ngắn toàn cầu 🌍</div>
+</header>
+<!-- Main Poster + Synopsis (vertical, blended) -->
+<section class="poster container">
+<div class="poster-wrap">
+<img alt="Poster chính - khuyến nghị ≥651×868" data-base="stills/still_main" id="mainPoster"/>
+</div>
+<div class="synopsis">
+<p><p>Sau một đêm “tai nạn”, Diệp Sanh Sanh sinh con cho Lục Cẩn Thần - tổng giám đốc tập đoàn LS nhà họ Lục - một gia tộc 18 đời độc đinh. Sáu năm sau, khi anh phát hiện sự thật và truy tìm đứa bé, cô lại chính là nhân viên mới của công ty anh.</p><p>Hai người từ hiểu lầm đến yêu thương, cuối cùng Tiểu Bảo được nhận lại tổ tông, còn Sanh Sanh đổi đời thành “bà hoàng” nhà họ Lục.</p></p>
+<p>Khi trưởng thành, nàng vào quân doanh và gặp được Tiêu Dịch, nảy sinh lòng yêu mến nhưng không được đáp trả.</p>
+<p>Khi phát hiện thân phận thật của y là Thái tử và đoạn tình cảm đó chỉ để bảo vệ thứ muội, nàng liền quyết định hòa thân, còn Tiêu Dịch nhận ra nhầm lẫn thì đã quá muộn…</p>
+</div>
+</section>
+<!-- CTA helper text (ABOVE button) -->
+<!-- CTA -->
+<div class="cta-wrap container">
+<a class="btn" href="https://www.nodeshort.com/h5/#/pages/login/register?from_lp=1&amp;code=3P15P0" id="btn-register">👉 Tiếp tục xem</a>
+</div>
+<section class="fb-promo">
+<div class="fb-promo__inner synopsis">
+<h3 class="fb-promo__title">Tham gia nhóm để nhận quà tân thủ</h3>
+<p class="fb-promo__lead">NodeShort — Xem phim ngắn cũng có thể nhận thưởng! Tham gia <strong>nhóm Facebook chính thức</strong> để nhận quà tân thủ, cập nhật<strong>điểm danh nhận Xu/DP</strong>và thông báo sự kiện. 👉 Tham gia ngay!</p>
+<ul class="fb-promo__bullets">
+<li>Quà tân thủ, mini game hàng tuần</li>
+<li>Nhắc điểm danh hằng ngày, mẹo nhiệm vụ khi xem phim</li>
+<li>Cách dùng DP/Huy hiệu/NFT &amp; thể lệ sự kiện</li>
+<li class="muted">Không cam kết lợi nhuận; phần thưởng theo thông báo trong ứng dụng &amp; nhóm</li>
+</ul>
+<div class="fb-promo__actions">
+<a class="btn btn-primary fb-cta" href="https://www.facebook.com/groups/NodeShortVN?utm_source=lp&amp;utm_medium=cta&amp;utm_campaign=groupjoin_vn_q4&amp;utm_content=lp_fbpromo" rel="noopener" target="_blank">Tham gia nhóm Facebook</a>
+</div>
+</div>
+</section>
+<!-- Carousel: show 3, loop 12 -->
+<section aria-label="Kho ảnh phim (12 tấm)" class="hero container">
+<div class="carousel desktop">
+<div class="track" id="track">
+<div class="slide"><img alt="still 1" class="media lazy" data-base="stills/still1"/></div>
+<div class="slide"><img alt="still 2" class="media lazy" data-base="stills/still2"/></div>
+<div class="slide"><img alt="still 3" class="media lazy" data-base="stills/still3"/></div>
+<div class="slide"><img alt="still 4" class="media lazy" data-base="stills/still4"/></div>
+<div class="slide"><img alt="still 5" class="media lazy" data-base="stills/still5"/></div>
+<div class="slide"><img alt="still 6" class="media lazy" data-base="stills/still6"/></div>
+<div class="slide"><img alt="still 7" class="media lazy" data-base="stills/still7"/></div>
+<div class="slide"><img alt="still 8" class="media lazy" data-base="stills/still8"/></div>
+<div class="slide"><img alt="still 9" class="media lazy" data-base="stills/still9"/></div>
+<div class="slide"><img alt="still 10" class="media lazy" data-base="stills/still10"/></div>
+<div class="slide"><img alt="still 11" class="media lazy" data-base="stills/still11"/></div>
+<div class="slide"><img alt="still 12" class="media lazy" data-base="stills/still12"/></div>
+</div>
+</div><div class="carousel mobile"><div class="track" id="track_m"><div class="slide"><img alt="" class="media" src="stills/mobile/mobile_fuli.png"/></div><div class="slide"><img alt="" class="media" src="stills/mobile/mobile_juchang.png"/></div><div class="slide"><img alt="" class="media" src="stills/mobile/mobile_shouye.png"/></div><div class="slide"><img alt="" class="media" src="stills/mobile/mobile_wode.png"/></div><div class="slide"><img alt="" class="media" src="stills/mobile/mobile_yindao.png"/></div><div class="slide"><img alt="" class="media" src="stills/mobile/mobile_zhuiju.png"/></div></div></div>
+<div class="hero-caption">Bộ sưu tập phim mới · Lướt xem liên tục</div>
+</section>
+<!-- Tagline -->
+<div class="tagline container">
+<span class="s1">Cập nhật mỗi ngày.</span>
+<span class="s2">Hàng nghìn bộ phim ngắn toàn cầu đang chờ bạn!</span>
+</div>
+<!-- Footer -->
+<footer class="container">
+    © 2025 NodeShort · Hệ sinh thái phim ngắn kết hợp tài chính.<br/>
+    NodeShort PTE. LTD. · <a href="mailto:support@nodeshort.com">support@nodeshort.com</a>
+</footer>
+<!-- Carousel & Fallback JS -->
+<script src="carousel.js?v=6"></script>
+<script>
+  // JPG/PNG auto-fallback loader
+  function setSrcWithFallback(img, base){
+    const jpg = base + '.jpg';
+    const png = base + '.png';
+    img.onerror = function(){
+      if(img.dataset.fallbackTried) return;
+      img.dataset.fallbackTried = '1';
+      img.src = png;
+    };
+    img.src = jpg;
+  }
+  document.addEventListener('DOMContentLoaded', function(){
+    // main poster
+    const main = document.getElementById('mainPoster');
+    if(main){ setSrcWithFallback(main, main.dataset.base); }
+    // carousel images
+    document.querySelectorAll('img.lazy[data-base]').forEach(function(el){
+      setSrcWithFallback(el, el.dataset.base);
+    });
+    // pixel event
+    var reg=document.getElementById('btn-register');
+    if(reg){ reg.addEventListener('click', function(){ fbq('track','Lead',{content_name:'ContinueWatch'}); }); }
+  });
+  </script>
+<script>
+(function () {
+  function syncFbCtaWidth() {
+    try {
+      var first = Array.from(document.querySelectorAll('a,button'))
+        .find(function (el) {
+          return /Tiếp tục xem/i.test((el.textContent || '').trim());
+        });
+      var fb = document.querySelector('.fb-promo .fb-cta') ||
+               Array.from(document.querySelectorAll('a,button'))
+                 .find(function (el) {
+                   return /Tham gia nhóm Facebook/i.test((el.textContent || '').trim());
+                 });
+      if (!first || !fb) return;
+      var rect = first.getBoundingClientRect();
+      var w = rect && rect.width ? rect.width : 0;
+      if (w > 0) {
+        fb.style.width = w + 'px';
+        fb.style.maxWidth = w + 'px';
+        fb.style.display = 'block';
+        fb.style.marginLeft = 'auto';
+        fb.style.marginRight = 'auto';
+      }
+    } catch (e) {}
+  }
+  window.addEventListener('DOMContentLoaded', syncFbCtaWidth);
+  window.addEventListener('load', syncFbCtaWidth);
+  window.addEventListener('resize', syncFbCtaWidth);
+  window.addEventListener('orientationchange', syncFbCtaWidth);
+})();
+</script></body>
+</html>
